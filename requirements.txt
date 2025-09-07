@@ -11,4 +11,5 @@ aiofiles==23.2.1
 httpx==0.25.2
 sqlalchemy==2.0.23
 python-dotenv==1.0.0
+mangum==0.17.0
 
