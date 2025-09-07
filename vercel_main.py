@@ -5,10 +5,8 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-from app.api.search import router as search_router
-from app.api.fine_tuning import router as fine_tuning_router
 from app.core.vercel_config import settings
-from app.models.database import create_tables
+from app.core.vercel_database import create_tables
 import logging
 import os
 
@@ -23,9 +21,8 @@ app = FastAPI(
     description="AI-powered search engine with OpenAI integration"
 )
 
-# Include API routers
-app.include_router(search_router)
-app.include_router(fine_tuning_router)
+# Note: For Vercel deployment, we'll use simplified endpoints
+# Full API routers are available in the main application
 
 # Setup templates
 templates = Jinja2Templates(directory="templates")
@@ -46,6 +43,33 @@ async def health_check():
         "version": settings.app_version,
         "platform": "vercel"
     }
+
+
+@app.get("/api/search/")
+async def search(
+    query: str,
+    limit: int = 5
+):
+    """Simple search endpoint for Vercel"""
+    try:
+        from app.services.vercel_search_engine import VercelSearchEngine
+        from app.models.search import SearchQuery
+        
+        search_engine = VercelSearchEngine()
+        search_query = SearchQuery(query=query, limit=limit)
+        
+        response = await search_engine.search(search_query)
+        return response.dict()
+        
+    except Exception as e:
+        return {
+            "error": str(e),
+            "query": query,
+            "results": [],
+            "total_results": 0,
+            "processing_time": 0,
+            "ai_summary": "Search temporarily unavailable. Please try again."
+        }
 
 
 @app.on_event("startup")
