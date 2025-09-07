@@ -1,0 +1,21 @@
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Database Configuration
+DATABASE_URL=postgresql://username:password@localhost:5432/mawrid_search
+REDIS_URL=redis://localhost:6379/0
+
+# Elasticsearch Configuration
+ELASTICSEARCH_URL=http://localhost:9200
+
+# Application Configuration
+APP_NAME=Mawrid Search Engine
+APP_VERSION=1.0.0
+DEBUG=True
+SECRET_KEY=your_secret_key_here
+
+# Search Configuration
+MAX_SEARCH_RESULTS=20
+CRAWL_DELAY=1
+MAX_CRAWL_DEPTH=3
+
