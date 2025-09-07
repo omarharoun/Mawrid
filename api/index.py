@@ -160,5 +160,6 @@ async def search(query: str):
     }
 
 
-# Vercel handler
-handler = app
+# Vercel handler - use Mangum for ASGI compatibility
+from mangum import Mangum
+handler = Mangum(app)

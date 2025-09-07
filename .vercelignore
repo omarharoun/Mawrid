@@ -1,4 +1,11 @@
-# Vercel ignore file
+# Ignore unnecessary files for Vercel deployment
+Dockerfile
+docker-compose.yml
+data/
+logs/
+*.log
+.env
+.env.local
 __pycache__/
 *.pyc
 *.pyo
@@ -21,34 +28,9 @@ coverage.xml
 .mypy_cache
 .pytest_cache
 .hypothesis
-
-# Data files
-data/
-logs/
-*.db
-*.sqlite
-
-# Docker files
-Dockerfile
-docker-compose.yml
-
-# Test files
-test_*.py
-*_test.py
-
-# Development files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# IDE files
+.DS_Store
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# OS files
-.DS_Store
-Thumbs.db
+*~
