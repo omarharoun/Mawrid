@@ -12,18 +12,12 @@ class handler(BaseHTTPRequestHandler):
         path = parsed_path.path
         query_params = parse_qs(parsed_path.query)
         
-        # Set CORS headers
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
-        
         try:
             if path == '/':
                 # Home page - return HTML
+                self.send_response(200)
                 self.send_header('Content-type', 'text/html')
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 html_content = """
                 <!DOCTYPE html>
@@ -151,6 +145,10 @@ class handler(BaseHTTPRequestHandler):
                 
             elif path == '/health':
                 # Health check
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
                 response = {
                     "status": "healthy", 
                     "message": "Mawrid Search Engine is running!",
@@ -160,6 +158,10 @@ class handler(BaseHTTPRequestHandler):
                 
             elif path == '/api/search':
                 # Search endpoint
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
                 query = query_params.get('query', ['test'])[0]
                 openai_key = os.getenv("OPENAI_API_KEY")
                 has_openai = bool(openai_key)
@@ -184,12 +186,16 @@ class handler(BaseHTTPRequestHandler):
             else:
                 # 404 for other paths
                 self.send_response(404)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 response = {"error": "Not found"}
                 self.wfile.write(json.dumps(response).encode())
                 
         except Exception as e:
             self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             response = {"error": f"Internal server error: {str(e)}"}
             self.wfile.write(json.dumps(response).encode())
