@@ -35,6 +35,6 @@
  	return response;
  }
  
- export const config = {
- \tmatcher: ['/account/:path*'],
- };
+export const config = {
+	matcher: ['/account/:path*'],
+};
