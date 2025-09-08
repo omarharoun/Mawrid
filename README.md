@@ -1,39 +1,85 @@
- ## Next.js + Supabase starter (Vercel-ready)
- 
- - **Framework**: Next.js App Router (v14)
- - **Auth/DB**: Supabase (`@supabase/ssr`)
- - **Styling**: Tailwind CSS
- 
- ### Setup
- 1. Copy envs
- 
- ```bash
- cp .env.example .env.local
- ```
- 
- 2. Create a Supabase project and set envs in `.env.local`:
- - `NEXT_PUBLIC_SUPABASE_URL`
- - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
- - optional: `NEXT_PUBLIC_SITE_URL`
- 
- 3. Install & run
- 
- ```bash
- pnpm install
- pnpm dev
- ```
- 
- ### Deploy to Vercel
- - Push this folder and import the repo in Vercel.
- - Set the same env vars in Vercel Project Settings → Environment Variables.
- - Framework preset: Next.js.
- - If this repo has other code at the root, set Project → Settings → General → Root Directory to `web/`.
- 
- ### Structure
- - `src/app` – App Router pages
- - `src/lib/supabase` – client/server helpers
- - `src/middleware.ts` – protects `/account` routes
- 
- ### Auth
- - `GET /login` – email/password login (adjust for your flow)
- - `POST /auth/sign-out` – signs out and redirects to `/`
+# Mawrid - AI-Powered Search Engine
+
+An AI-powered search application built with Next.js that provides intelligent search results with AI-generated summaries.
+
+- **Framework**: Next.js App Router (v14)
+- **Search**: Tavily API for web search
+- **AI**: OpenAI GPT for intelligent summaries
+- **Styling**: Tailwind CSS
+- **Auth/DB**: Supabase (optional)
+
+## Features
+
+- 🔍 Real-time web search powered by Tavily
+- 🤖 AI-generated summaries using OpenAI GPT
+- ⚡ Fast and responsive interface
+- 📱 Mobile-friendly design
+- 🔐 Optional user authentication
+
+## Setup
+
+### 1. Get API Keys
+
+You'll need API keys from:
+- [Tavily](https://tavily.com/) - for web search functionality
+- [OpenAI](https://platform.openai.com/) - for AI summaries
+
+### 2. Environment Variables
+
+Copy the example environment file:
+```bash
+cp env.example .env.local
+```
+
+Set the required environment variables in `.env.local`:
+```bash
+# Required
+TAVILY_API_KEY=your_tavily_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Optional (for authentication)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 3. Install & Run
+
+```bash
+npm install
+npm run dev
+```
+
+The application will be available at `http://localhost:3000`.
+
+## Deploy to Vercel
+
+1. Push this repository to GitHub
+2. Import the repository in Vercel
+3. Set the environment variables in Vercel Project Settings → Environment Variables:
+   - `TAVILY_API_KEY`
+   - `OPENAI_API_KEY`
+   - (Optional) Supabase keys if using authentication
+4. Deploy!
+
+## Project Structure
+
+- `src/app` – Next.js App Router pages and API routes
+- `src/app/api/search` – Search API endpoint with Tavily and OpenAI integration
+- `src/lib` – Utility functions and configurations
+- `src/app/components` – React components
+
+## API Endpoints
+
+- `POST /api/search` – Main search endpoint
+- `GET /api/search?query=...` – Get search suggestions
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. **"Tavily API key not configured"** - Make sure `TAVILY_API_KEY` is set
+2. **"OpenAI API key not configured"** - Make sure `OPENAI_API_KEY` is set  
+3. **Search not working** - Check that your API keys are valid and have quota
+4. **Build errors** - Run `npm install` to ensure all dependencies are installed
+
+For more details, see [DEPLOYMENT.md](./DEPLOYMENT.md).
