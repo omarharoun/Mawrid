@@ -6,7 +6,12 @@ export type SearchResult = {
     score: number;
     timestamp: string;
     domain: string;
-    metadata?: Record<string, unknown>;
+    favicon?: string;
+    metadata?: {
+        published_date?: string;
+        language?: string;
+        type?: string;
+    };
 };
 
 export type SearchResponse = {
@@ -15,7 +20,13 @@ export type SearchResponse = {
     total_results: number;
     processing_time: number;
     ai_summary?: string;
+    answer?: string;
     suggestions?: string[];
+    images?: Array<{
+        url: string;
+        title?: string;
+        source?: string;
+    }>;
 };
 
 export async function search(query: string, options?: { limit?: number; offset?: number; filters?: Record<string, unknown> }) {

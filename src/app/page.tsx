@@ -16,19 +16,19 @@
  	const [sugs, setSugs] = useState<string[]>([]);
  	const inputRef = useRef<HTMLInputElement | null>(null);
  
- 	useEffect(() => {
- 		if (query.length < 3) {
- 			setSugs([]);
- 			return;
- 		}
- 		const t = setTimeout(async () => {
- 			try {
- 				const list = await getSuggestions(query);
- 				setSugs(list);
- 			} catch {}
- 		}, 200);
- 		return () => clearTimeout(t);
- 	}, [query]);
+	useEffect(() => {
+		if (query.length < 2) {
+			setSugs([]);
+			return;
+		}
+		const t = setTimeout(async () => {
+			try {
+				const list = await getSuggestions(query);
+				setSugs(list);
+			} catch {}
+		}, 150); // Faster response for better UX
+		return () => clearTimeout(t);
+	}, [query]);
  
  	async function handleSubmit(q?: string) {
  		const text = (q ?? query).trim();
@@ -51,10 +51,17 @@
  		}
  	}
  
- 	const sourceItems = useMemo(() => {
- 		if (!result) return [] as { title: string; url: string; domain: string }[];
- 		return result.results.map((r) => ({ title: r.title, url: r.url, domain: r.domain }));
- 	}, [result]);
+	const sourceItems = useMemo(() => {
+		if (!result) return [] as { title: string; url: string; domain: string; snippet?: string; favicon?: string; metadata?: any }[];
+		return result.results.map((r) => ({ 
+			title: r.title, 
+			url: r.url, 
+			domain: r.domain,
+			snippet: r.snippet,
+			favicon: r.favicon,
+			metadata: r.metadata
+		}));
+	}, [result]);
  
 	return (
 		<div className="min-h-screen bg-black text-white">
@@ -89,25 +96,31 @@
 					</div>
 
 					{/* Search Input */}
-					<div className="relative max-w-3xl mx-auto">
+					<div className="relative max-w-4xl mx-auto">
 						<div className="relative">
+							<div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+								</svg>
+							</div>
 							<input
 								ref={inputRef}
 								value={query}
 								onChange={(e) => setQuery(e.target.value)}
 								onKeyDown={(e) => {
 									if (e.key === 'Enter') handleSubmit();
+									if (e.key === 'Escape') setSugs([]);
 								}}
-								placeholder="Ask anything..."
-								className="w-full h-14 px-6 pr-16 text-lg bg-gray-900/50 border border-gray-700 rounded-2xl outline-none focus:border-white/30 focus:bg-gray-900/70 transition-all duration-200 placeholder:text-gray-500"
+								placeholder="Search the web..."
+								className="w-full h-14 pl-12 pr-16 text-lg bg-white/10 border border-gray-600 rounded-2xl outline-none focus:border-blue-500 focus:bg-white/15 transition-all duration-200 placeholder:text-gray-400 text-white backdrop-blur-sm"
 							/>
 							<button
 								onClick={() => handleSubmit()}
 								disabled={isLoading || !query.trim()}
-								className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+								className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								{isLoading ? (
-									<div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+									<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
 								) : (
 									<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -116,20 +129,23 @@
 							</button>
 						</div>
 
-						{/* Suggestions Dropdown */}
+						{/* Enhanced Suggestions Dropdown */}
 						{!isLoading && sugs.length > 0 && (
-							<div className="absolute left-0 right-0 mt-2 rounded-2xl border border-gray-700 bg-gray-900/95 backdrop-blur-sm shadow-2xl overflow-hidden animate-fade-in">
+							<div className="absolute left-0 right-0 mt-2 rounded-2xl border border-gray-600 bg-gray-900/95 backdrop-blur-sm shadow-2xl overflow-hidden animate-fade-in z-50">
+								<div className="px-4 py-2 text-xs text-gray-400 border-b border-gray-700">
+									Suggestions
+								</div>
 								{sugs.map((s, i) => (
 									<button
 										key={i}
-										className="w-full text-left px-6 py-4 hover:bg-gray-800/50 transition-colors border-b border-gray-800/50 last:border-b-0"
+										className="w-full text-left px-4 py-3 hover:bg-gray-800/50 transition-colors border-b border-gray-800/30 last:border-b-0 group"
 										onClick={() => handleSubmit(s)}
 									>
 										<div className="flex items-center space-x-3">
-											<svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<svg className="w-4 h-4 text-gray-500 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 											</svg>
-											<span className="text-white">{s}</span>
+											<span className="text-white group-hover:text-blue-300 transition-colors">{s}</span>
 										</div>
 									</button>
 								))}
@@ -171,6 +187,72 @@
 
 						{result && (
 							<div className="animate-fade-in space-y-6">
+								{/* Direct Answer (Featured Snippet) */}
+								{result.answer && (
+									<div className="max-w-4xl mr-auto">
+										<div className="bg-blue-900/20 border border-blue-700/50 rounded-2xl p-6">
+											<div className="flex items-start space-x-3">
+												<div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+													<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+													</svg>
+												</div>
+												<div className="flex-1">
+													<h3 className="text-lg font-semibold text-blue-300 mb-2">Quick Answer</h3>
+													<div className="prose prose-invert max-w-none">
+														<ReactMarkdown remarkPlugins={[remarkGfm]}>{result.answer}</ReactMarkdown>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								)}
+
+								{/* Images */}
+								{result.images && result.images.length > 0 && (
+									<div className="max-w-4xl mr-auto">
+										<div className="flex items-center space-x-2 mb-4">
+											<svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+											</svg>
+											<h3 className="text-lg font-semibold text-gray-200">Images</h3>
+										</div>
+										<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+											{result.images.slice(0, 8).map((img, idx) => (
+												<a
+													key={idx}
+													href={img.url}
+													target="_blank"
+													rel="noreferrer"
+													className="group block rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all duration-200 hover:shadow-lg"
+												>
+													<div className="aspect-square bg-gray-800 relative overflow-hidden">
+														<img
+															src={img.url}
+															alt={img.title || 'Search result image'}
+															className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+															onError={(e) => {
+																e.currentTarget.style.display = 'none';
+																e.currentTarget.nextElementSibling?.classList.remove('hidden');
+															}}
+														/>
+														<div className="hidden absolute inset-0 bg-gray-700 flex items-center justify-center">
+															<svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+																<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+															</svg>
+														</div>
+													</div>
+													{img.title && (
+														<div className="p-2">
+															<p className="text-xs text-gray-300 line-clamp-2">{img.title}</p>
+														</div>
+													)}
+												</a>
+											))}
+										</div>
+									</div>
+								)}
+
 								<Sources items={sourceItems} />
 								<div className="max-w-3xl mr-auto text-sm text-gray-500 flex items-center space-x-4">
 									<span>{result.total_results} results</span>
