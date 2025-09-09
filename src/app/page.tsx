@@ -9,47 +9,88 @@
  type ChatItem = { id: string; role: 'user' | 'assistant'; content: string };
  
  export default function HomePage() {
- 	const [query, setQuery] = useState('');
- 	const [isLoading, setIsLoading] = useState(false);
- 	const [chat, setChat] = useState<ChatItem[]>([]);
- 	const [result, setResult] = useState<SearchResponse | null>(null);
- 	const [sugs, setSugs] = useState<string[]>([]);
- 	const inputRef = useRef<HTMLInputElement | null>(null);
+	const [query, setQuery] = useState('');
+	const [isLoading, setIsLoading] = useState(false);
+	const [chat, setChat] = useState<ChatItem[]>([]);
+	const [result, setResult] = useState<SearchResponse | null>(null);
+	const [sugs, setSugs] = useState<string[]>([]);
+	const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
+	const inputRef = useRef<HTMLInputElement | null>(null);
  
 	useEffect(() => {
-		if (query.length < 2) {
+		if (query.length < 1) {
 			setSugs([]);
+			setSelectedSuggestion(-1);
 			return;
 		}
+		
+		// Ultra-fast debouncing for real-time feel
 		const t = setTimeout(async () => {
 			try {
-				const list = await getSuggestions(query);
+				const list = await getSuggestions(query, 15); // Get more suggestions
 				setSugs(list);
-			} catch {}
-		}, 150); // Faster response for better UX
+				setSelectedSuggestion(-1); // Reset selection when new suggestions arrive
+			} catch (error) {
+				console.error('Autocomplete error:', error);
+				setSugs([]);
+				setSelectedSuggestion(-1);
+			}
+		}, 50); // Ultra-fast 50ms debounce for real-time feel
+		
 		return () => clearTimeout(t);
 	}, [query]);
  
- 	async function handleSubmit(q?: string) {
- 		const text = (q ?? query).trim();
- 		if (!text) return;
- 		setIsLoading(true);
- 		setSugs([]);
- 		setChat((c) => [...c, { id: crypto.randomUUID(), role: 'user', content: text }]);
- 		setQuery('');
- 		try {
- 			const res = await search(text);
- 			setResult(res);
- 			setChat((c) => [
- 				...c,
- 				{ id: crypto.randomUUID(), role: 'assistant', content: res.ai_summary || 'No summary available.' },
- 			]);
- 		} catch (e) {
- 			setChat((c) => [...c, { id: crypto.randomUUID(), role: 'assistant', content: 'Something went wrong.' }]);
- 		} finally {
- 			setIsLoading(false);
- 		}
- 	}
+	async function handleSubmit(q?: string) {
+		const text = (q ?? query).trim();
+		if (!text) return;
+		setIsLoading(true);
+		setSugs([]);
+		setSelectedSuggestion(-1);
+		setChat((c) => [...c, { id: crypto.randomUUID(), role: 'user', content: text }]);
+		setQuery('');
+		try {
+			const res = await search(text);
+			setResult(res);
+			setChat((c) => [
+				...c,
+				{ id: crypto.randomUUID(), role: 'assistant', content: res.ai_summary || 'No summary available.' },
+			]);
+		} catch (e) {
+			setChat((c) => [...c, { id: crypto.randomUUID(), role: 'assistant', content: 'Something went wrong.' }]);
+		} finally {
+			setIsLoading(false);
+		}
+	}
+
+	// Handle keyboard navigation
+	function handleKeyDown(e: React.KeyboardEvent) {
+		if (sugs.length === 0) return;
+
+		switch (e.key) {
+			case 'ArrowDown':
+				e.preventDefault();
+				setSelectedSuggestion(prev => 
+					prev < sugs.length - 1 ? prev + 1 : prev
+				);
+				break;
+			case 'ArrowUp':
+				e.preventDefault();
+				setSelectedSuggestion(prev => prev > 0 ? prev - 1 : -1);
+				break;
+			case 'Enter':
+				e.preventDefault();
+				if (selectedSuggestion >= 0 && selectedSuggestion < sugs.length) {
+					handleSubmit(sugs[selectedSuggestion]);
+				} else {
+					handleSubmit();
+				}
+				break;
+			case 'Escape':
+				setSugs([]);
+				setSelectedSuggestion(-1);
+				break;
+		}
+	}
  
 	const sourceItems = useMemo(() => {
 		if (!result) return [] as { title: string; url: string; domain: string; snippet?: string; favicon?: string; metadata?: any }[];
@@ -107,12 +148,11 @@
 								ref={inputRef}
 								value={query}
 								onChange={(e) => setQuery(e.target.value)}
-								onKeyDown={(e) => {
-									if (e.key === 'Enter') handleSubmit();
-									if (e.key === 'Escape') setSugs([]);
-								}}
+								onKeyDown={handleKeyDown}
 								placeholder="Search the web..."
 								className="w-full h-14 pl-12 pr-16 text-lg bg-white/10 border border-gray-600 rounded-2xl outline-none focus:border-blue-500 focus:bg-white/15 transition-all duration-200 placeholder:text-gray-400 text-white backdrop-blur-sm"
+								autoComplete="off"
+								spellCheck="false"
 							/>
 							<button
 								onClick={() => handleSubmit()}
@@ -129,26 +169,52 @@
 							</button>
 						</div>
 
-						{/* Enhanced Suggestions Dropdown */}
+						{/* Ultra-Fast Suggestions Dropdown */}
 						{!isLoading && sugs.length > 0 && (
-							<div className="absolute left-0 right-0 mt-2 rounded-2xl border border-gray-600 bg-gray-900/95 backdrop-blur-sm shadow-2xl overflow-hidden animate-fade-in z-50">
-								<div className="px-4 py-2 text-xs text-gray-400 border-b border-gray-700">
-									Suggestions
+							<div className="absolute left-0 right-0 mt-2 rounded-2xl border border-gray-600 bg-gray-900/95 backdrop-blur-sm shadow-2xl overflow-hidden animate-fade-in z-50 max-h-96 overflow-y-auto">
+								<div className="px-4 py-2 text-xs text-gray-400 border-b border-gray-700 flex items-center justify-between">
+									<span>Suggestions ({sugs.length})</span>
+									<span className="text-green-400">⚡ Real-time</span>
 								</div>
 								{sugs.map((s, i) => (
 									<button
 										key={i}
-										className="w-full text-left px-4 py-3 hover:bg-gray-800/50 transition-colors border-b border-gray-800/30 last:border-b-0 group"
+										className={`w-full text-left px-4 py-3 transition-all duration-150 border-b border-gray-800/30 last:border-b-0 group suggestion-item ${
+											selectedSuggestion === i 
+												? 'bg-blue-600/20 border-blue-500/30' 
+												: 'hover:bg-gray-800/50'
+										}`}
 										onClick={() => handleSubmit(s)}
 									>
 										<div className="flex items-center space-x-3">
-											<svg className="w-4 h-4 text-gray-500 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<svg className={`w-4 h-4 transition-colors flex-shrink-0 ${
+												selectedSuggestion === i 
+													? 'text-blue-400' 
+													: 'text-gray-500 group-hover:text-blue-400'
+											}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 											</svg>
-											<span className="text-white group-hover:text-blue-300 transition-colors">{s}</span>
+											<span className={`transition-colors text-sm leading-relaxed ${
+												selectedSuggestion === i 
+													? 'text-blue-300' 
+													: 'text-white group-hover:text-blue-300'
+											}`}>{s}</span>
+											{s.toLowerCase().startsWith(query.toLowerCase()) && (
+												<span className="ml-auto text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded-full">
+													Exact match
+												</span>
+											)}
+											{selectedSuggestion === i && (
+												<span className="ml-auto text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded-full">
+													Selected
+												</span>
+											)}
 										</div>
 									</button>
 								))}
+								<div className="px-4 py-2 text-xs text-gray-500 border-t border-gray-700 text-center">
+									Press Enter to search or click a suggestion
+								</div>
 							</div>
 						)}
 					</div>
