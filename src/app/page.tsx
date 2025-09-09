@@ -177,8 +177,11 @@
 						</div>
 
 						{/* Ultra-Fast Suggestions Dropdown */}
-						{console.log('🎨 Render check:', { isLoading, sugsLength: sugs.length, query })}
 						{/* Debug: Always show suggestions if we have them */}
+						{(() => {
+							console.log('🎨 Render check:', { isLoading, sugsLength: sugs.length, query });
+							return null;
+						})()}
 						{sugs.length > 0 && (
 							<div className="absolute left-0 right-0 mt-2 rounded-2xl border border-gray-600 bg-gray-900/95 backdrop-blur-sm shadow-2xl overflow-hidden animate-fade-in z-50 max-h-96 overflow-y-auto">
 								<div className="px-4 py-2 text-xs text-gray-400 border-b border-gray-700">
