@@ -2,9 +2,10 @@
  import { useEffect, useMemo, useRef, useState } from 'react';
  import ReactMarkdown from 'react-markdown';
  import remarkGfm from 'remark-gfm';
- import { Message } from './components/Message';
- import { Sources } from './components/Sources';
- import { search, type SearchResponse } from '../lib/search-client';
+import { Message } from './components/Message';
+import { Sources } from './components/Sources';
+import { EmbeddedBrowser } from './components/EmbeddedBrowser';
+import { search, type SearchResponse } from '../lib/search-client';
  
  type ChatItem = { id: string; role: 'user' | 'assistant'; content: string };
  
@@ -13,6 +14,8 @@
 	const [isLoading, setIsLoading] = useState(false);
 	const [chat, setChat] = useState<ChatItem[]>([]);
 	const [result, setResult] = useState<SearchResponse | null>(null);
+	const [browserUrl, setBrowserUrl] = useState<string | null>(null);
+	const [clickedLinks, setClickedLinks] = useState<string[]>([]);
 	const inputRef = useRef<HTMLInputElement | null>(null);
  
  
@@ -42,6 +45,16 @@
 			e.preventDefault();
 			handleSubmit();
 		}
+	}
+
+	// Browser functions
+	function handleLinkClick(url: string) {
+		setBrowserUrl(url);
+		setClickedLinks(prev => [...prev, url]);
+	}
+
+	function handleCloseBrowser() {
+		setBrowserUrl(null);
 	}
  
 	const sourceItems = useMemo(() => {
@@ -223,7 +236,7 @@
 									</div>
 								)}
 
-								<Sources items={sourceItems} />
+								<Sources items={sourceItems} onLinkClick={handleLinkClick} />
 								<div className="max-w-3xl mr-auto text-sm text-gray-500 flex items-center space-x-4">
 									<span>{result.total_results} results</span>
 									<span>•</span>
@@ -233,7 +246,55 @@
 						)}
 					</section>
 				)}
+
+				{/* Clicked Links History */}
+				{clickedLinks.length > 0 && (
+					<section className="mt-8">
+						<div className="max-w-4xl mx-auto">
+							<div className="flex items-center space-x-2 mb-4">
+								<svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+								</svg>
+								<h3 className="text-lg font-semibold text-gray-200">Recently Visited Links</h3>
+								<span className="text-sm text-gray-400">({clickedLinks.length})</span>
+							</div>
+							<div className="space-y-2">
+								{clickedLinks.slice(-10).reverse().map((link, index) => (
+									<div key={index} className="flex items-center space-x-3 p-3 bg-gray-900/30 rounded-lg border border-gray-700">
+										<div className="flex-shrink-0 w-2 h-2 bg-green-400 rounded-full"></div>
+										<div className="flex-1 min-w-0">
+											<button
+												onClick={() => handleLinkClick(link)}
+												className="text-sm text-blue-400 hover:text-blue-300 transition-colors truncate"
+											>
+												{link}
+											</button>
+										</div>
+										<button
+											onClick={() => window.open(link, '_blank')}
+											className="flex-shrink-0 p-1 text-gray-400 hover:text-white transition-colors"
+											title="Open in new tab"
+										>
+											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+											</svg>
+										</button>
+									</div>
+								))}
+							</div>
+						</div>
+					</section>
+				)}
 			</main>
+
+			{/* Embedded Browser */}
+			{browserUrl && (
+				<EmbeddedBrowser
+					url={browserUrl}
+					onClose={handleCloseBrowser}
+					onLinkClick={handleLinkClick}
+				/>
+			)}
 		</div>
 	);
- }
+}

@@ -13,7 +13,7 @@ type Source = {
     };
 };
 
-export function Sources({ items }: { items: Source[] }) {
+export function Sources({ items, onLinkClick }: { items: Source[]; onLinkClick: (url: string) => void }) {
     if (!items || items.length === 0) return null;
     
     return (
@@ -25,14 +25,12 @@ export function Sources({ items }: { items: Source[] }) {
                 <h3 className="text-lg font-semibold text-gray-200">Search Results</h3>
             </div>
             <div className="space-y-4">
-                {items.slice(0, 8).map((s, idx) => (
-                    <a 
-                        key={idx} 
-                        href={s.url} 
-                        target="_blank" 
-                        rel="noreferrer" 
-                        className="group block rounded-xl border border-gray-700 bg-gray-900/30 p-5 hover:bg-gray-800/50 hover:border-gray-600 transition-all duration-200 hover:shadow-lg"
-                    >
+                    {items.slice(0, 8).map((s, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => onLinkClick(s.url)}
+                            className="group block w-full text-left rounded-xl border border-gray-700 bg-gray-900/30 p-5 hover:bg-gray-800/50 hover:border-gray-600 transition-all duration-200 hover:shadow-lg"
+                        >
                         <div className="flex items-start space-x-4">
                             {/* Favicon */}
                             <div className="flex-shrink-0 w-6 h-6 mt-1">
@@ -91,7 +89,7 @@ export function Sources({ items }: { items: Source[] }) {
                                 </div>
                             </div>
                         </div>
-                    </a>
+                    </button>
                 ))}
             </div>
         </div>
