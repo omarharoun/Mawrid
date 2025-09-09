@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { TavilySearchAPIClient } from '@tavily/core';
+import { tavily } from '@tavily/core';
 import OpenAI from 'openai';
 
 function createTavilyClient() {
-    return new TavilySearchAPIClient(process.env.TAVILY_API_KEY);
+    return tavily({ apiKey: process.env.TAVILY_API_KEY });
 }
 
 function createOpenAIClient() {
