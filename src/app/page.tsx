@@ -172,9 +172,8 @@
 						{/* Ultra-Fast Suggestions Dropdown */}
 						{!isLoading && sugs.length > 0 && (
 							<div className="absolute left-0 right-0 mt-2 rounded-2xl border border-gray-600 bg-gray-900/95 backdrop-blur-sm shadow-2xl overflow-hidden animate-fade-in z-50 max-h-96 overflow-y-auto">
-								<div className="px-4 py-2 text-xs text-gray-400 border-b border-gray-700 flex items-center justify-between">
+								<div className="px-4 py-2 text-xs text-gray-400 border-b border-gray-700">
 									<span>Suggestions ({sugs.length})</span>
-									<span className="text-green-400">⚡ Real-time</span>
 								</div>
 								{sugs.map((s, i) => (
 									<button
@@ -199,11 +198,6 @@
 													? 'text-blue-300' 
 													: 'text-white group-hover:text-blue-300'
 											}`}>{s}</span>
-											{s.toLowerCase().startsWith(query.toLowerCase()) && (
-												<span className="ml-auto text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded-full">
-													Exact match
-												</span>
-											)}
 											{selectedSuggestion === i && (
 												<span className="ml-auto text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded-full">
 													Selected

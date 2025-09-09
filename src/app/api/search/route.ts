@@ -166,120 +166,6 @@ export async function GET(request: Request) {
     }
 }
 
-// Comprehensive knowledge base for ultra-fast autocomplete
-const KNOWLEDGE_BASE = {
-    // Technology & Programming
-    programming: [
-        'javascript tutorial', 'python programming', 'react development', 'node.js backend',
-        'typescript guide', 'vue.js framework', 'angular development', 'express.js server',
-        'mongodb database', 'postgresql setup', 'docker containers', 'kubernetes orchestration',
-        'aws cloud services', 'azure platform', 'google cloud', 'firebase hosting',
-        'git version control', 'github repository', 'gitlab ci/cd', 'jenkins automation',
-        'rest api design', 'graphql queries', 'microservices architecture', 'serverless functions',
-        'webpack bundling', 'babel transpilation', 'eslint linting', 'prettier formatting',
-        'jest testing', 'cypress e2e', 'unit testing', 'integration testing',
-        'agile methodology', 'scrum framework', 'devops practices', 'ci/cd pipeline'
-    ],
-    
-    // AI & Machine Learning
-    ai: [
-        'artificial intelligence', 'machine learning', 'deep learning', 'neural networks',
-        'chatgpt prompts', 'openai api', 'tensorflow framework', 'pytorch library',
-        'computer vision', 'natural language processing', 'nlp techniques', 'text analysis',
-        'data science', 'data analysis', 'pandas library', 'numpy arrays',
-        'scikit-learn', 'keras framework', 'jupyter notebooks', 'data visualization',
-        'reinforcement learning', 'supervised learning', 'unsupervised learning', 'clustering algorithms',
-        'regression analysis', 'classification models', 'feature engineering', 'model optimization',
-        'ai ethics', 'bias in ai', 'explainable ai', 'ai safety'
-    ],
-    
-    // Business & Marketing
-    business: [
-        'digital marketing', 'seo optimization', 'social media marketing', 'content marketing',
-        'email marketing', 'ppc advertising', 'google ads', 'facebook marketing',
-        'linkedin marketing', 'twitter strategy', 'instagram growth', 'youtube marketing',
-        'ecommerce platform', 'shopify store', 'woocommerce setup', 'amazon fba',
-        'dropshipping business', 'affiliate marketing', 'influencer marketing', 'brand strategy',
-        'market research', 'customer analysis', 'competitor analysis', 'swot analysis',
-        'business plan', 'startup funding', 'venture capital', 'angel investors',
-        'project management', 'agile methodology', 'scrum master', 'product management',
-        'sales funnel', 'lead generation', 'conversion optimization', 'customer retention'
-    ],
-    
-    // Health & Wellness
-    health: [
-        'mental health', 'anxiety treatment', 'depression help', 'stress management',
-        'meditation techniques', 'mindfulness practice', 'yoga benefits', 'exercise routine',
-        'healthy diet', 'nutrition facts', 'weight loss', 'muscle building',
-        'sleep hygiene', 'insomnia treatment', 'sleep disorders', 'circadian rhythm',
-        'cardiovascular health', 'heart disease', 'diabetes management', 'blood pressure',
-        'cancer prevention', 'cancer treatment', 'cancer research', 'oncology',
-        'mental illness', 'therapy options', 'counseling services', 'psychiatric help',
-        'addiction recovery', 'substance abuse', 'alcohol treatment', 'drug rehabilitation',
-        'chronic pain', 'pain management', 'physical therapy', 'rehabilitation'
-    ],
-    
-    // Education & Learning
-    education: [
-        'online learning', 'coursera courses', 'udemy tutorials', 'khan academy',
-        'university degree', 'masters program', 'phd research', 'scholarship opportunities',
-        'language learning', 'english grammar', 'spanish lessons', 'french language',
-        'math tutoring', 'algebra help', 'calculus problems', 'statistics course',
-        'science experiments', 'physics concepts', 'chemistry lab', 'biology study',
-        'history facts', 'world history', 'american history', 'ancient civilizations',
-        'literature analysis', 'poetry writing', 'creative writing', 'essay writing',
-        'study techniques', 'memory improvement', 'note taking', 'exam preparation'
-    ],
-    
-    // Travel & Lifestyle
-    travel: [
-        'travel planning', 'budget travel', 'backpacking tips', 'solo travel',
-        'family vacation', 'honeymoon destinations', 'beach resorts', 'mountain hiking',
-        'city breaks', 'cultural tourism', 'adventure travel', 'luxury travel',
-        'travel insurance', 'visa requirements', 'passport renewal', 'travel documents',
-        'flight booking', 'hotel reservations', 'airbnb stays', 'hostel accommodation',
-        'travel photography', 'travel blogging', 'travel vlogging', 'travel writing',
-        'local cuisine', 'food tourism', 'wine tasting', 'cooking classes',
-        'travel safety', 'travel health', 'vaccination requirements', 'travel medicine'
-    ],
-    
-    // Finance & Investment
-    finance: [
-        'personal finance', 'budget planning', 'saving money', 'debt management',
-        'credit score', 'credit cards', 'loans', 'mortgage rates',
-        'investment strategies', 'stock market', 'cryptocurrency', 'bitcoin trading',
-        'real estate', 'property investment', 'rental income', 'house flipping',
-        'retirement planning', '401k account', 'ira investment', 'pension funds',
-        'tax planning', 'tax deductions', 'tax returns', 'accounting software',
-        'insurance policies', 'life insurance', 'health insurance', 'car insurance',
-        'financial planning', 'wealth management', 'estate planning', 'financial advisor'
-    ]
-};
-
-// Popular search patterns and completions
-const POPULAR_PATTERNS = {
-    questions: [
-        'what is', 'how to', 'why is', 'when is', 'where is', 'who is',
-        'what are', 'how are', 'why are', 'when are', 'where are', 'who are',
-        'what does', 'how does', 'why does', 'when does', 'where does', 'who does',
-        'what can', 'how can', 'why can', 'when can', 'where can', 'who can',
-        'how much', 'how many', 'how long', 'how often', 'how far', 'how fast'
-    ],
-    
-    modifiers: [
-        'best', 'top', 'latest', 'new', 'free', 'cheap', 'expensive',
-        'easy', 'hard', 'simple', 'complex', 'quick', 'fast', 'slow',
-        'good', 'bad', 'great', 'awesome', 'amazing', 'terrible', 'worst',
-        'popular', 'trending', 'viral', 'famous', 'unknown', 'hidden', 'secret'
-    ],
-    
-    actions: [
-        'learn', 'study', 'practice', 'master', 'understand', 'explain',
-        'build', 'create', 'make', 'develop', 'design', 'program',
-        'buy', 'sell', 'rent', 'hire', 'find', 'search', 'discover',
-        'compare', 'review', 'rate', 'recommend', 'suggest', 'advise'
-    ]
-};
 
 // Cached suggestions for ultra-fast response
 const suggestionCache = new Map<string, string[]>();
@@ -294,48 +180,48 @@ async function generateUltraFastSuggestions(query: string, limit: number): Promi
     
     const suggestions: string[] = [];
     const words = lowerQuery.split(' ').filter(w => w.length > 0);
-    const firstWord = words[0];
-    const lastWord = words[words.length - 1];
     
-    // 1. Exact matches from knowledge base (highest priority)
-    for (const [category, items] of Object.entries(KNOWLEDGE_BASE)) {
-        for (const item of items) {
-            if (item.toLowerCase().startsWith(lowerQuery)) {
-                suggestions.push(item);
-            }
-        }
-    }
-    
-    // 2. Partial matches from knowledge base
-    for (const [category, items] of Object.entries(KNOWLEDGE_BASE)) {
-        for (const item of items) {
-            if (item.toLowerCase().includes(lowerQuery) && !suggestions.includes(item)) {
-                suggestions.push(item);
-            }
-        }
-    }
-    
-    // 3. Smart completions based on query patterns
+    // 1. Dynamic completions based on the actual query
     if (words.length === 1) {
-        // Single word queries - add common completions
-        const commonCompletions = [
-            `${query} tutorial`, `${query} guide`, `${query} examples`, `${query} definition`,
-            `${query} meaning`, `${query} benefits`, `${query} alternatives`, `${query} comparison`,
-            `how to ${query}`, `what is ${query}`, `best ${query}`, `${query} for beginners`
+        // Single word - generate contextual completions
+        const word = words[0];
+        const completions = [
+            `${word} tutorial`, `${word} guide`, `${word} examples`, `${word} definition`,
+            `${word} meaning`, `${word} benefits`, `${word} alternatives`, `${word} comparison`,
+            `how to ${word}`, `what is ${word}`, `best ${word}`, `${word} for beginners`,
+            `${word} tips`, `${word} tricks`, `${word} review`, `${word} vs`,
+            `learn ${word}`, `master ${word}`, `understand ${word}`, `${word} explained`
         ];
-        suggestions.push(...commonCompletions);
+        suggestions.push(...completions);
     } else if (words.length > 1) {
-        // Multi-word queries - add variations
+        // Multi-word - generate variations and extensions
+        const baseQuery = words.join(' ');
         const variations = [
-            `${query} tutorial`, `${query} guide`, `${query} examples`, `${query} benefits`,
-            `${query} alternatives`, `${query} comparison`, `${query} review`, `${query} tips`,
-            `best ${query}`, `how to ${query}`, `what is ${query}`, `${query} for beginners`
+            `${baseQuery} tutorial`, `${baseQuery} guide`, `${baseQuery} examples`,
+            `${baseQuery} benefits`, `${baseQuery} alternatives`, `${baseQuery} comparison`,
+            `${baseQuery} review`, `${baseQuery} tips`, `${baseQuery} tricks`,
+            `best ${baseQuery}`, `how to ${baseQuery}`, `what is ${baseQuery}`,
+            `${baseQuery} for beginners`, `${baseQuery} explained`, `${baseQuery} vs`,
+            `learn ${baseQuery}`, `master ${baseQuery}`, `understand ${baseQuery}`
         ];
         suggestions.push(...variations);
+        
+        // Add partial completions for each word
+        for (let i = 1; i < words.length; i++) {
+            const partial = words.slice(0, i).join(' ');
+            suggestions.push(`${partial} tutorial`, `${partial} guide`, `${partial} examples`);
+        }
     }
     
-    // 4. Question pattern completions
-    const questionPatterns = POPULAR_PATTERNS.questions;
+    // 2. Question pattern completions
+    const questionPatterns = [
+        'what is', 'how to', 'why is', 'when is', 'where is', 'who is',
+        'what are', 'how are', 'why are', 'when are', 'where are', 'who are',
+        'what does', 'how does', 'why does', 'when does', 'where does', 'who does',
+        'what can', 'how can', 'why can', 'when can', 'where can', 'who can',
+        'how much', 'how many', 'how long', 'how often', 'how far', 'how fast'
+    ];
+    
     for (const pattern of questionPatterns) {
         if (lowerQuery.startsWith(pattern)) {
             const remaining = lowerQuery.substring(pattern.length).trim();
@@ -343,54 +229,87 @@ async function generateUltraFastSuggestions(query: string, limit: number): Promi
                 suggestions.push(`${pattern} ${remaining} explained`);
                 suggestions.push(`${pattern} ${remaining} examples`);
                 suggestions.push(`${pattern} ${remaining} benefits`);
+                suggestions.push(`${pattern} ${remaining} work`);
+                suggestions.push(`${pattern} ${remaining} help`);
+            } else {
+                // Complete the question pattern
+                suggestions.push(`${pattern} this`, `${pattern} that`, `${pattern} it`);
             }
+        } else if (!lowerQuery.includes(pattern)) {
+            // Add question patterns that could complete the query
+            suggestions.push(`${pattern} ${query}`);
         }
     }
     
-    // 5. Modifier completions
-    for (const modifier of POPULAR_PATTERNS.modifiers) {
+    // 3. Modifier completions
+    const modifiers = [
+        'best', 'top', 'latest', 'new', 'free', 'cheap', 'expensive',
+        'easy', 'hard', 'simple', 'complex', 'quick', 'fast', 'slow',
+        'good', 'bad', 'great', 'awesome', 'amazing', 'terrible', 'worst',
+        'popular', 'trending', 'viral', 'famous', 'unknown', 'hidden', 'secret',
+        'professional', 'beginner', 'advanced', 'expert', 'complete', 'comprehensive'
+    ];
+    
+    for (const modifier of modifiers) {
         if (!lowerQuery.includes(modifier)) {
             suggestions.push(`${modifier} ${query}`);
         }
     }
     
-    // 6. Action completions
-    for (const action of POPULAR_PATTERNS.actions) {
+    // 4. Action completions
+    const actions = [
+        'learn', 'study', 'practice', 'master', 'understand', 'explain',
+        'build', 'create', 'make', 'develop', 'design', 'program',
+        'buy', 'sell', 'rent', 'hire', 'find', 'search', 'discover',
+        'compare', 'review', 'rate', 'recommend', 'suggest', 'advise',
+        'download', 'install', 'setup', 'configure', 'optimize', 'improve'
+    ];
+    
+    for (const action of actions) {
         if (!lowerQuery.includes(action)) {
             suggestions.push(`${action} ${query}`);
         }
     }
     
-    // 7. Category-specific suggestions
-    if (lowerQuery.includes('ai') || lowerQuery.includes('artificial')) {
-        suggestions.push('artificial intelligence applications', 'ai ethics', 'machine learning basics');
+    // 5. Context-aware suggestions based on query content
+    if (lowerQuery.includes('ai') || lowerQuery.includes('artificial') || lowerQuery.includes('machine')) {
+        suggestions.push('artificial intelligence applications', 'ai ethics', 'machine learning basics', 'ai tools 2024');
     }
-    if (lowerQuery.includes('programming') || lowerQuery.includes('code')) {
-        suggestions.push('programming languages', 'coding bootcamp', 'software development');
+    if (lowerQuery.includes('programming') || lowerQuery.includes('code') || lowerQuery.includes('developer')) {
+        suggestions.push('programming languages', 'coding bootcamp', 'software development', 'web development');
     }
-    if (lowerQuery.includes('business') || lowerQuery.includes('marketing')) {
-        suggestions.push('business strategy', 'digital marketing', 'entrepreneurship');
+    if (lowerQuery.includes('business') || lowerQuery.includes('marketing') || lowerQuery.includes('startup')) {
+        suggestions.push('business strategy', 'digital marketing', 'entrepreneurship', 'business plan');
     }
-    if (lowerQuery.includes('health') || lowerQuery.includes('medical')) {
-        suggestions.push('health research', 'medical treatment', 'wellness tips');
+    if (lowerQuery.includes('health') || lowerQuery.includes('medical') || lowerQuery.includes('wellness')) {
+        suggestions.push('health research', 'medical treatment', 'wellness tips', 'mental health');
+    }
+    if (lowerQuery.includes('travel') || lowerQuery.includes('trip') || lowerQuery.includes('vacation')) {
+        suggestions.push('travel planning', 'budget travel', 'travel destinations', 'travel tips');
+    }
+    if (lowerQuery.includes('finance') || lowerQuery.includes('money') || lowerQuery.includes('investment')) {
+        suggestions.push('personal finance', 'investment strategies', 'budget planning', 'financial advice');
     }
     
-    // 8. Trending topics (simulated)
-    const trendingTopics = [
-        'chatgpt prompts', 'ai tools', 'remote work', 'sustainable living',
-        'cryptocurrency news', 'climate change', 'mental health awareness',
-        'digital nomad', 'minimalism', 'productivity tips'
-    ];
-    
-    for (const topic of trendingTopics) {
-        if (topic.toLowerCase().includes(lowerQuery) || lowerQuery.includes(topic.toLowerCase())) {
-            suggestions.push(topic);
+    // 6. Generate completions that extend the current query
+    const lastWord = words[words.length - 1];
+    if (lastWord && lastWord.length > 2) {
+        const extensions = [
+            'tutorial', 'guide', 'examples', 'benefits', 'alternatives', 'comparison',
+            'review', 'tips', 'tricks', 'explained', 'basics', 'advanced',
+            'for beginners', 'vs', '2024', 'best practices', 'common mistakes'
+        ];
+        
+        for (const ext of extensions) {
+            if (!lowerQuery.includes(ext)) {
+                suggestions.push(`${query} ${ext}`);
+            }
         }
     }
     
-    // Remove duplicates, filter out the original query, and sort by relevance
+    // 7. Remove duplicates, filter out the original query, and sort by relevance
     const uniqueSuggestions = [...new Set(suggestions)]
-        .filter(s => s.toLowerCase() !== lowerQuery)
+        .filter(s => s.toLowerCase() !== lowerQuery && s.toLowerCase() !== query)
         .sort((a, b) => {
             // Prioritize exact matches
             const aExact = a.toLowerCase().startsWith(lowerQuery);
