@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server';
 import { TavilySearchAPIClient } from '@tavily/core';
 import OpenAI from 'openai';
 
-const tavilyClient = new TavilySearchAPIClient(process.env.TAVILY_API_KEY);
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+function createTavilyClient() {
+    return new TavilySearchAPIClient(process.env.TAVILY_API_KEY);
+}
+
+function createOpenAIClient() {
+    return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
 
 export async function POST(request: Request) {
     try {
@@ -26,6 +29,7 @@ export async function POST(request: Request) {
         const startTime = Date.now();
 
         // Search with Tavily
+        const tavilyClient = createTavilyClient();
         const searchResponse = await tavilyClient.search(query, {
             searchDepth: 'basic',
             maxResults: limit,
@@ -56,6 +60,7 @@ ${results.map(r => `**${r.title}**\n${r.content}\nSource: ${r.url}\n`).join('\n-
 
 Please provide a well-structured summary that answers the user's query:`;
 
+            const openai = createOpenAIClient();
             const completion = await openai.chat.completions.create({
                 model: 'gpt-3.5-turbo',
                 messages: [
