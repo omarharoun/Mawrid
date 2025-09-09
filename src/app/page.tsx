@@ -4,7 +4,7 @@
  import remarkGfm from 'remark-gfm';
  import { Message } from './components/Message';
  import { Sources } from './components/Sources';
- import { getSuggestions, search, type SearchResponse } from '../lib/search-client';
+ import { search, type SearchResponse } from '../lib/search-client';
  
  type ChatItem = { id: string; role: 'user' | 'assistant'; content: string };
  
@@ -13,41 +13,13 @@
 	const [isLoading, setIsLoading] = useState(false);
 	const [chat, setChat] = useState<ChatItem[]>([]);
 	const [result, setResult] = useState<SearchResponse | null>(null);
-	const [sugs, setSugs] = useState<string[]>([]);
-	const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
 	const inputRef = useRef<HTMLInputElement | null>(null);
  
-	useEffect(() => {
-		if (query.length < 1) {
-			setSugs([]);
-			setSelectedSuggestion(-1);
-			return;
-		}
-		
-		// Ultra-fast debouncing for real-time feel
-		const t = setTimeout(async () => {
-			try {
-				console.log('🔍 Fetching suggestions for:', query);
-				const list = await getSuggestions(query, 15); // Get more suggestions
-				console.log('✅ Received suggestions:', list);
-				setSugs(list);
-				setSelectedSuggestion(-1); // Reset selection when new suggestions arrive
-			} catch (error) {
-				console.error('❌ Autocomplete error:', error);
-				setSugs([]);
-				setSelectedSuggestion(-1);
-			}
-		}, 50); // Ultra-fast 50ms debounce for real-time feel
-		
-		return () => clearTimeout(t);
-	}, [query]);
  
 	async function handleSubmit(q?: string) {
 		const text = (q ?? query).trim();
 		if (!text) return;
 		setIsLoading(true);
-		setSugs([]);
-		setSelectedSuggestion(-1);
 		setChat((c) => [...c, { id: crypto.randomUUID(), role: 'user', content: text }]);
 		setQuery('');
 		try {
@@ -66,31 +38,9 @@
 
 	// Handle keyboard navigation
 	function handleKeyDown(e: React.KeyboardEvent) {
-		if (sugs.length === 0) return;
-
-		switch (e.key) {
-			case 'ArrowDown':
-				e.preventDefault();
-				setSelectedSuggestion(prev => 
-					prev < sugs.length - 1 ? prev + 1 : prev
-				);
-				break;
-			case 'ArrowUp':
-				e.preventDefault();
-				setSelectedSuggestion(prev => prev > 0 ? prev - 1 : -1);
-				break;
-			case 'Enter':
-				e.preventDefault();
-				if (selectedSuggestion >= 0 && selectedSuggestion < sugs.length) {
-					handleSubmit(sugs[selectedSuggestion]);
-				} else {
-					handleSubmit();
-				}
-				break;
-			case 'Escape':
-				setSugs([]);
-				setSelectedSuggestion(-1);
-				break;
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			handleSubmit();
 		}
 	}
  
@@ -138,11 +88,6 @@
 						</p>
 					</div>
 
-					{/* Debug Info */}
-					<div className="text-center mb-4 text-sm text-gray-400">
-						Debug: Query="{query}", Suggestions={sugs.length}, Loading={isLoading.toString()}
-					</div>
-
 					{/* Search Input */}
 					<div className="relative max-w-4xl mx-auto">
 						<div className="relative">
@@ -176,53 +121,6 @@
 							</button>
 						</div>
 
-						{/* Ultra-Fast Suggestions Dropdown */}
-						{/* Debug: Always show suggestions if we have them */}
-						{(() => {
-							console.log('🎨 Render check:', { isLoading, sugsLength: sugs.length, query });
-							return null;
-						})()}
-						{sugs.length > 0 && (
-							<div className="absolute left-0 right-0 mt-2 rounded-2xl border border-gray-600 bg-gray-900/95 backdrop-blur-sm shadow-2xl overflow-hidden animate-fade-in z-50 max-h-96 overflow-y-auto">
-								<div className="px-4 py-2 text-xs text-gray-400 border-b border-gray-700">
-									<span>Suggestions ({sugs.length})</span>
-								</div>
-								{sugs.map((s, i) => (
-									<button
-										key={i}
-										className={`w-full text-left px-4 py-3 transition-all duration-150 border-b border-gray-800/30 last:border-b-0 group suggestion-item ${
-											selectedSuggestion === i 
-												? 'bg-blue-600/20 border-blue-500/30' 
-												: 'hover:bg-gray-800/50'
-										}`}
-										onClick={() => handleSubmit(s)}
-									>
-										<div className="flex items-center space-x-3">
-											<svg className={`w-4 h-4 transition-colors flex-shrink-0 ${
-												selectedSuggestion === i 
-													? 'text-blue-400' 
-													: 'text-gray-500 group-hover:text-blue-400'
-											}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-											</svg>
-											<span className={`transition-colors text-sm leading-relaxed ${
-												selectedSuggestion === i 
-													? 'text-blue-300' 
-													: 'text-white group-hover:text-blue-300'
-											}`}>{s}</span>
-											{selectedSuggestion === i && (
-												<span className="ml-auto text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded-full">
-													Selected
-												</span>
-											)}
-										</div>
-									</button>
-								))}
-								<div className="px-4 py-2 text-xs text-gray-500 border-t border-gray-700 text-center">
-									Press Enter to search or click a suggestion
-								</div>
-							</div>
-						)}
 					</div>
 				</div>
 
