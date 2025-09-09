@@ -63,7 +63,7 @@
 				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="flex items-center justify-between h-16">
 						<div className="flex items-center space-x-4">
-							<div className="text-xl font-semibold text-white">Perplexity</div>
+							<div className="text-xl font-semibold text-white">Marid- المورد</div>
 							<div className="hidden sm:block text-sm text-gray-400">AI-powered search</div>
 						</div>
 						<div className="flex items-center space-x-4">
